@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register - My App Store</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h2>📝 Register</h2>
+    <form id="registerForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="login.html">Login</a></p>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAfmQCP41V8KZav_DpZlH5q_WjTKJ2BtpM",
+      authDomain: "myappstore-b67ba.firebaseapp.com",
+      projectId: "myappstore-b67ba",
+      storageBucket: "myappstore-b67ba.firebasestorage.app",
+      messagingSenderId: "513524022358",
+      appId: "1:513524022358:web:01c201f40a024e4aa94ff7",
+      measurementId: "G-03W2EBD0P0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById("registerForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          alert("Registration successful!");
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          alert("Registration failed: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>

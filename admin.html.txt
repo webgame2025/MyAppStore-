@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel - Upload App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h2>🛠️ Upload New App</h2>
+    <form id="uploadForm">
+      <input type="text" id="appName" placeholder="App Name" required />
+      <textarea id="appDesc" placeholder="App Description" required></textarea>
+      <input type="file" id="apkFile" accept=".apk" required />
+      <input type="file" id="screenshotFile" accept="image/*" />
+      <button type="submit">Upload</button>
+    </form>
+    <div id="status"></div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAfmQCP41V8KZav_DpZlH5q_WjTKJ2BtpM",
+      authDomain: "myappstore-b67ba.firebaseapp.com",
+      projectId: "myappstore-b67ba",
+      storageBucket: "myappstore-b67ba.appspot.com",
+      messagingSenderId: "513524022358",
+      appId: "1:513524022358:web:01c201f40a024e4aa94ff7",
+      measurementId: "G-03W2EBD0P0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const form = document.getElementById("uploadForm");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("appName").value;
+      const desc = document.getElementById("appDesc").value;
+      const apk = document.getElementById("apkFile").files[0];
+      const screenshot = document.getElementById("screenshotFile").files[0];
+
+      if (!apk) {
+        alert("Please select an APK file.");
+        return;
+      }
+
+      status.innerText = "Uploading...";
+
+      try {
+        // Upload APK
+        const apkRef = ref(storage, `apks/${apk.name}`);
+        await uploadBytes(apkRef, apk);
+        const apkURL = await getDownloadURL(apkRef);
+
+        // Upload screenshot if exists
+        let screenshotURL = "";
+        if (screenshot) {
+          const shotRef = ref(storage, `screenshots/${screenshot.name}`);
+          await uploadBytes(shotRef, screenshot);
+          screenshotURL = await getDownloadURL(shotRef);
+        }
+
+        // Add to Firestore
+        await addDoc(collection(db, "apps"), {
+          name,
+          description: desc,
+          apk: apkURL,
+          screenshot: screenshotURL,
+          createdAt: Date.now()
+        });
+
+        status.innerText = "✅ App uploaded successfully!";
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        status.innerText = "❌ Upload failed: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

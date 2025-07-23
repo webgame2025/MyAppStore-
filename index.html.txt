@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My App Store</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>📱 My App Store</h1>
+    <nav>
+      <a href="login.html">Login</a>
+      <a href="admin.html">Admin Panel</a>
+      <button id="darkModeToggle">🌓</button>
+    </nav>
+  </header>
+
+  <main id="app-list">
+    <!-- Apps will be loaded here by script.js -->
+  </main>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
